@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Productivity Pal</title>
+    <style>
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes titleFloat {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(2deg); }
+            75% { transform: translateY(5px) rotate(-2deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .app-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .title-letter {
+            display: inline-block;
+            transition: all 0.3s ease;
+            color: #2d3436;
+        }
+
+        .title-letter.lit {
+            color: transparent;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #FFD93D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .app-title:hover {
+            text-shadow: none;
+            animation: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(-45deg, 
+                #FF6B6B, 
+                #4ECDC4, 
+                #45B7D1, 
+                #96E6B3,
+                #FFD93D,
+                #FF8E53
+            );
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: float 6s ease-in-out infinite;
+            text-align: center;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h2 {
+            color: #2d3436;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(45, 52, 54, 0.1);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #4ECDC4;
+            outline: none;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.2);
+        }
+
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s ease;
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, 
+                #96E6B3,
+                #4ECDC4,
+                #45B7D1,
+                #96E6B3
+            );
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, 
+                #FF6B6B,
+                #FF8E53,
+                #FFD93D,
+                #FF6B6B
+            );
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-text {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0.95),
+                rgba(245, 246, 250, 0.95),
+                rgba(255, 255, 255, 0.95)
+            );
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+            font-weight: bold;
+        }
+
+        .status-on-task {
+            color: #27ae60 !important;
+        }
+
+        .status-off-task {
+            color: #e74c3c !important;
+        }
+
+        #points-display {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .points-earned {
+            color: #27ae60;
+            animation: float 1s ease-in-out;
+        }
+
+        #leaderboard {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .leaderboard-title {
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid rgba(45, 52, 54, 0.1);
+        }
+
+        .leaderboard-entry:last-child {
+            border-bottom: none;
+        }
+
+        .username {
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .points {
+            color: #27ae60;
+        }
+
+        .nav-links {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .nav-links a {
+            color: #4ECDC4;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-text {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .user-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 8px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(90deg, 
+                #e74c3c,
+                #FF8E53,
+                #e74c3c
+            );
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Page -->
+        <div id="login-page" class="page active">
+            <h1 class="app-title"></h1>
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <input type="text" id="login-username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <div class="nav-links">
+                <a href="#" onclick="showPage('signup-page')">Don't have an account? Sign up</a>
+            </div>
+            <div id="login-error" class="error-text"></div>
+        </div>
+
+        <!-- Signup Page -->
+        <div id="signup-page" class="page">
+            <h1 class="app-title"></h1>
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="input-group">
+                    <input type="text" id="signup-username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+            </form>
+            <div class="nav-links">
+                <a href="#" onclick="showPage('login-page')">Already have an account? Login</a>
+            </div>
+            <div id="signup-error" class="error-text"></div>
+        </div>
+
+        <!-- Tracking Page -->
+        <div id="tracking-page" class="page">
+            <h1 class="app-title"></h1>
+            <div class="user-info">
+                <span id="user-welcome">Welcome, </span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h2>Screenshot Tracker</h2>
+            <button id="start-capture" class="btn-primary">Start Capture</button>
+            <button id="stop-capture" class="btn-secondary" disabled>Stop Capture</button>
+            <div id="status-text" class="status-text">Ready</div>
+            <div id="points-display">Points: 0</div>
+            <div id="leaderboard">
+                <div class="leaderboard-title">Leaderboard</div>
+                <div id="leaderboard-entries"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        let currentUsername = '';
+        let totalPoints = 0;
+
+        // Initialize title letters
+        function initializeTitles() {
+            const titles = document.querySelectorAll('.app-title');
+            const text = "Productivity Pal";
+            
+            titles.forEach(title => {
+                title.innerHTML = text.split('').map(letter => 
+                    `<span class="title-letter">${letter}</span>`
+                ).join('');
+
+                const letters = title.querySelectorAll('.title-letter');
+                
+                // Add mouseover effect for each letter
+                letters.forEach((letter, index) => {
+                    letter.addEventListener('mouseover', () => {
+                        // Light up nearby letters with a ripple effect
+                        letters.forEach((l, i) => {
+                            const distance = Math.abs(i - index);
+                            if (distance <= 2) { // Light up 2 letters on each side
+                                setTimeout(() => {
+                                    l.classList.add('lit');
+                                }, distance * 50); // Delay based on distance
+                            }
+                        });
+                    });
+                });
+
+                // Reset on mouseout from title
+                title.addEventListener('mouseout', () => {
+                    setTimeout(() => {
+                        letters.forEach(l => l.classList.remove('lit'));
+                    }, 500);
+                });
+            });
+        }
+
+        // Call initialization after DOM loads
+        document.addEventListener('DOMContentLoaded', initializeTitles);
+
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Login Form
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUsername = username;
+                    document.getElementById('user-welcome').textContent = `Welcome, ${username}`;
+                    showPage('tracking-page');
+                    updateLeaderboard();
+                } else {
+                    document.getElementById('login-error').textContent = data.error;
+                }
+            } catch (error) {
+                document.getElementById('login-error').textContent = 'Error connecting to server';
+            }
+        });
+
+        // Signup Form
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showPage('login-page');
+                    document.getElementById('signup-username').value = '';
+                    document.getElementById('signup-password').value = '';
+                } else {
+                    document.getElementById('signup-error').textContent = data.error;
+                }
+            } catch (error) {
+                document.getElementById('signup-error').textContent = 'Error connecting to server';
+            }
+        });
+
+        // Logout Function
+        function logout() {
+            currentUsername = '';
+            totalPoints = 0;
+            document.getElementById('points-display').textContent = 'Points: 0';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            showPage('login-page');
+        }
+
+        // Screenshot Controls
+        const startBtn = document.getElementById('start-capture');
+        const stopBtn = document.getElementById('stop-capture');
+        const statusText = document.getElementById('status-text');
+        const pointsDisplay = document.getElementById('points-display');
+        const leaderboardEntries = document.getElementById('leaderboard-entries');
+
+        async function updateLeaderboard() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/leaderboard');
+                const data = await response.json();
+                
+                if (data.leaderboard) {
+                    leaderboardEntries.innerHTML = data.leaderboard
+                        .map(entry => `
+                            <div class="leaderboard-entry">
+                                <span class="username">${entry.username}</span>
+                                <span class="points">${entry.points} pts</span>
+                            </div>
+                        `)
+                        .join('');
+                }
+            } catch (error) {
+                console.error('Error updating leaderboard:', error);
+            }
+        }
+
+        // Update leaderboard every 20 seconds
+        setInterval(updateLeaderboard, 20000);
+
+        startBtn.addEventListener('click', () => {
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            if (!currentUsername) {
+                statusText.textContent = 'Error: Not logged in';
+                return;
+            }
+            ipcRenderer.send('start-capture', { username: currentUsername });
+            statusText.textContent = 'Starting capture...';
+        });
+
+        stopBtn.addEventListener('click', () => {
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            ipcRenderer.send('stop-capture');
+            statusText.textContent = 'Capture stopped';
+        });
+
+        ipcRenderer.on('capture-status', (event, data) => {
+            if (typeof data === 'string') {
+                statusText.textContent = data;
+                statusText.classList.remove('status-on-task', 'status-off-task');
+            } else {
+                statusText.textContent = data.message;
+                statusText.classList.remove('status-on-task', 'status-off-task');
+                
+                if (data.points_earned > 0) {
+                    totalPoints = data.total_points;
+                    pointsDisplay.textContent = `Points: ${totalPoints}`;
+                    pointsDisplay.classList.add('points-earned');
+                    setTimeout(() => pointsDisplay.classList.remove('points-earned'), 1000);
+                    
+                    updateLeaderboard();
+                }
+                
+                if (data.is_on_task) {
+                    statusText.classList.add('status-on-task');
+                } else {
+                    statusText.classList.add('status-off-task');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

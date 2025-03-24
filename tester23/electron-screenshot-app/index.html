@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Screenshot Capture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .start {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .stop {
+            background-color: #f44336;
+            color: white;
+        }
+        .quit {
+            background-color: #808080;
+            color: white;
+        }
+        .button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h2>Screenshot Capture</h2>
+    <div id="status" class="status">Status: Ready to capture screenshots</div>
+    <button id="startButton" class="button start">Start Capture</button>
+    <button id="stopButton" class="button stop" style="display: none;">Stop Capture</button>
+    <button id="quitButton" class="button quit">Quit</button>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const quitButton = document.getElementById('quitButton');
+        const statusDiv = document.getElementById('status');
+
+        startButton.addEventListener('click', () => {
+            ipcRenderer.send('start-capture');
+            startButton.style.display = 'none';
+            stopButton.style.display = 'block';
+            statusDiv.textContent = 'Status: Capturing screenshots every 20 seconds...';
+        });
+
+        stopButton.addEventListener('click', () => {
+            ipcRenderer.send('stop-capture');
+            stopButton.style.display = 'none';
+            startButton.style.display = 'block';
+            statusDiv.textContent = 'Status: Capture stopped';
+        });
+
+        quitButton.addEventListener('click', () => {
+            window.close();
+        });
+
+        ipcRenderer.on('capture-status', (event, message) => {
+            statusDiv.textContent = `Status: ${message}`;
+        });
+    </script>
+</body>
+</html> 

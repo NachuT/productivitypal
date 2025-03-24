@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity Tracker</title>
+    <style>
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes statusGlow {
+            0% { box-shadow: 0 2px 10px rgba(78, 205, 196, 0.2); }
+            50% { box-shadow: 0 2px 15px rgba(255, 107, 107, 0.3); }
+            100% { box-shadow: 0 2px 10px rgba(78, 205, 196, 0.2); }
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(-45deg, 
+                #FF6B6B, 
+                #4ECDC4, 
+                #45B7D1, 
+                #96E6B3,
+                #FFD93D,
+                #FF8E53
+            );
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .container:hover {
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(90deg, 
+                #4ECDC4,
+                #45B7D1,
+                #96E6B3,
+                #4ECDC4
+            );
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .username {
+            font-weight: bold;
+            color: white;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s ease;
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #start {
+            background: linear-gradient(90deg, 
+                #96E6B3,
+                #4ECDC4,
+                #45B7D1,
+                #96E6B3
+            );
+            background-size: 200% 100%;
+        }
+
+        #stop {
+            background: linear-gradient(90deg, 
+                #FF6B6B,
+                #FF8E53,
+                #FFD93D,
+                #FF6B6B
+            );
+            background-size: 200% 100%;
+        }
+
+        #logout {
+            background: linear-gradient(90deg, 
+                #FF8E53,
+                #FF6B6B,
+                #FFD93D,
+                #FF8E53
+            );
+            background-size: 200% 100%;
+            flex: none;
+            padding: 8px 16px;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0.95),
+                rgba(245, 246, 250, 0.95),
+                rgba(255, 255, 255, 0.95)
+            );
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite, statusGlow 4s ease-in-out infinite;
+            color: #2d3436;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-on-task {
+            color: #27ae60 !important;
+            text-shadow: 0 0 10px rgba(39, 174, 96, 0.2);
+        }
+
+        .status-off-task {
+            color: #e74c3c !important;
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            .control-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="username" id="user-display"></span>
+            <button id="logout">Logout</button>
+        </div>
+        <div class="control-buttons">
+            <button id="start">Start Capture</button>
+            <button id="stop">Stop Capture</button>
+        </div>
+        <div id="status">Ready to start capturing</div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const username = localStorage.getItem('username');
+        if (!username) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('user-display').textContent = username;
+
+        const { ipcRenderer } = require('electron');
+        
+        document.getElementById('start').addEventListener('click', () => {
+            ipcRenderer.send('start-capture', { username }); // Pass username to main process
+            document.getElementById('start').disabled = true;
+            document.getElementById('stop').disabled = false;
+            document.getElementById('status').textContent = 'Starting capture...';
+        });
+
+        document.getElementById('stop').addEventListener('click', () => {
+            ipcRenderer.send('stop-capture');
+            document.getElementById('start').disabled = false;
+            document.getElementById('stop').disabled = true;
+            document.getElementById('status').textContent = 'Capture stopped';
+        });
+
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        });
+
+        ipcRenderer.on('capture-status', (event, message) => {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            
+            // Add color classes based on status
+            statusElement.classList.remove('status-on-task', 'status-off-task');
+            if (message.includes('On task')) {
+                statusElement.classList.add('status-on-task');
+            } else if (message.includes('Off task')) {
+                statusElement.classList.add('status-off-task');
+            }
+        });
+
+        // Initialize button states
+        document.getElementById('stop').disabled = true;
+    </script>
+</body>
+</html> 
